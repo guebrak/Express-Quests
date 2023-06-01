@@ -33,6 +33,8 @@ const getUsersById = (req, res) => {
     });
 };
 
+
+
 module.exports = {
     getUsers,
     getUsersById,
