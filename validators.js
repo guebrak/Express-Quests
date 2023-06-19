@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-exports.validateMovie = (req, res, next) => {
+const validateMovie = (req, res, next) => {
   const schema = Joi.object({
     title: Joi.string().required(),
     year: Joi.number().integer().min(1800).max(2030),
@@ -16,11 +16,14 @@ exports.validateMovie = (req, res, next) => {
   next();
 };
 
-exports.validateUser = (req, res, next) => {
+const validateUser = (req, res, next) => {
   const schema = Joi.object({
-    name: Joi.string().required(),
+    firstname: Joi.string().required(),
+    lastname: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
+    city: Joi.string(),
+    language: Joi.string(),
   });
 
   const { error } = schema.validate(req.body);
@@ -30,3 +33,10 @@ exports.validateUser = (req, res, next) => {
 
   next();
 };
+
+
+
+  module.exports = {
+    validateMovie,
+    validateUser,
+  };
