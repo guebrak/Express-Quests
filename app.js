@@ -17,6 +17,7 @@ const welcome = (req, res) => {
 app.get("/", welcome);
 
 const movieHandlers = require("./movieHandlers");
+const usersHandlers = require("./usersHandlers");
 const users = require("./users");
 const { validateMovie, validateUser } = require("./validators");
 const { hashPassword } = require("./auth");
@@ -30,18 +31,23 @@ app.get("/api/users/:id", users.getUsersById);
 
 //app.post sert à poster de nouvelles infos 
 app.post("/api/movies", movieHandlers.postMovie);
-app.post("/api/users", validateUser, hashPassword, users.postUsers);
 app.post("api/movies", validateMovie, movieHandlers.postMovie);
 app.post("/api/movies", validateMovie, movieHandlers.postMovie);
+app.post("/api/users", validateUser, hashPassword, users.postUsers);
+app.post("/api/users", validateUser, usersHandlers.postUser);
 
 
 //app.put sert à Update de nouvelles infos
 app.put("/api/movies/:id",validateMovie, movieHandlers.updateMovie);
+app.put("/api/users/:id", validateUser, usersHandlers.updateUsers );
 app.put("/api/users/:id", validateUser, hashPassword, users.updateUsers);
 
 //app.delete permet de supprimer une information
 app.delete("/api/movies/:id", movieHandlers.deleteMovie);
-app.delete("/api/users/:id", users.deleteUser)
+app.delete("/api/movies/:id", movieHandlers.deleteMovie);
+app.delete("/api/users/:id", users.deleteUser);
+app.delete("/api/users/:id", usersHandlers.deleteUsers);
+
 
 
 //Sert à écouter les routes
