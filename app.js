@@ -1,7 +1,8 @@
 require("dotenv").config();
+const { hashPassword, verifyPassword, verifyToken } = require("./auth.js");
 
 const express = require("express");
-const Joi = require('joi');
+// const Joi = require('joi');
 
 // Pour que express lise les fichier JSON
 app.use(express.json());
@@ -13,6 +14,14 @@ const welcome = (req, res) => {
   res.send("Welcome to my favourite movie list");
 };
 
+
+const isItDwight = (req,res) => {
+  if(req.body.email === "dwight@theoffice.com" && req.body.password === "123456"){
+    res.send("credential are valid")
+  }else{
+    res.sendStatus(401);
+  }
+}
 
 app.get("/", welcome);
 
@@ -35,6 +44,11 @@ app.post("api/movies", validateMovie, movieHandlers.postMovie);
 app.post("/api/movies", validateMovie, movieHandlers.postMovie);
 app.post("/api/users", validateUser, hashPassword, users.postUsers);
 app.post("/api/users", validateUser, usersHandlers.postUser);
+//login
+app.post(
+  "/api/login",
+  userHandlers.getUserByEmailWithPasswordAndPassToNext, verifyPassword
+);
 
 
 //app.put sert à Update de nouvelles infos
@@ -48,7 +62,9 @@ app.delete("/api/movies/:id", movieHandlers.deleteMovie);
 app.delete("/api/users/:id", users.deleteUser);
 app.delete("/api/users/:id", usersHandlers.deleteUsers);
 
+//private routes
 
+app.use(verifyToken);
 
 //Sert à écouter les routes
 app.listen(port, (err) => {

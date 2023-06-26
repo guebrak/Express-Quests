@@ -1,7 +1,18 @@
 const argon2 = require("argon2");
 
 const database = require("./database");
-const { hashPassword } = require("./auth");
+
+// const { hashPassword } = require("./auth");
+
+const hidePasswords = (users) => {
+  return users.map((user) => {
+    const { hashedPassword, ...userWithoutPassword } = user;
+    console.log(userWithoutPassword)
+    return userWithoutPassword;
+  });
+};
+
+
 const getUsers = (req, res) => {
     database
     .query("select * from users")
@@ -21,17 +32,16 @@ const getUsersById = (req, res) => {
     database
     .query("select * from users where id = ?", [id])
     .then(([users]) => {
-        if (users[0] != null) {
-            res.json(users[0])
-            res.status(200);
-        } else {
-            res.status(404).send("Not Found");
-            
-        }
+      if (users[0] != null) {
+        const usersWithoutPasswords = hidePasswords(users);
+        res.json(usersWithoutPasswords[0]);
+      } else {
+        res.status(404).send("Not Found");
+      }
     })
     .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error retrieving data from database");
+      console.error(err);
+      res.status(500).send("Error retrieving data from database");
     });
 };
 
@@ -128,6 +138,27 @@ const getUser = (req, res) => {
     });
 };
 
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const { email, password } = req.body;
+
+ 
+
+  database
+    .query("select * from users where email = ?", [email])
+    .then(([users]) => {
+      if (users[0] != null) {
+        req.user = users[0];
+
+        next();
+      } else {
+        res.sendStatus(401);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error retrieving data from database");
+    });
+};
 
 module.exports = {
     getUsers,
